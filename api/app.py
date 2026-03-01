@@ -41,10 +41,6 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 
 @app.route("/", methods=["GET"])
-def index():
-    return render_template("index.html")
-
-@app.route("/analyze", methods=["POST"])
 def analyze():
     try:
         if "image" not in request.files:
