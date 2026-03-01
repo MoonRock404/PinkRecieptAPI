@@ -37,7 +37,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
@@ -86,5 +86,5 @@ def analyze():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if _name_ == "_main_":
+if __name__ == "_main_":
     app.run(debug=True)
