@@ -87,6 +87,48 @@ def analyze():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/report", methods=["POST"])
+def generate_report():
+    try:
+        data = request.get_json()
+
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+
+        platform = data.get("platform")
+        severity = data.get("severity")
+        summary = data.get("summary")
+        options = data.get("options", [])
+        resources = data.get("resources", [])
+
+        if not all([platform, severity, summary]):
+            return jsonify({"error": "Missing required fields: platform, severity, summary"}), 400
+
+        model = genai.GenerativeModel("gemini-2.5-flash")
+
+        prompt = f"""
+        Generate a formal harassment report that a victim can copy and submit to {platform}.
+
+        Use the following details:
+        - Severity: {severity}
+        - Summary: {summary}
+        - Recommended options: {', '.join(options)}
+        - Resources: {', '.join(resources)}
+
+        Write it in a clear, professional tone. Include:
+        1. A brief description of the incident
+        2. Why it is considered harassment
+        3. What action is being requested from {platform}
+        4. Any relevant resources or next steps for the victim
+
+        Return ONLY the report text, no extra explanation.
+        """
+
+        response = model.generate_content(prompt)
+        return jsonify({"report": response.text.strip()}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
