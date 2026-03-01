@@ -82,36 +82,12 @@ def analyze():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-@app.route("/report", methods=["POST"])
-def report():
-    """
-    Optional feature: users can report concerning content to higher-ups.
-    Expects JSON body:
-    {
-        "summary": "...",
-        "severity": "...",
-        "options": [...],
-        "resources": [...],
-        "user": "optional user id or email"
-    }
-    """
-    try:
-        report_data = request.get_json()
-        if not report_data:
-            return jsonify({"error": "Missing JSON data"}), 400
 
-        # For now, just log it (replace this with database/email/Slack integration)
-        print("Report submitted:", report_data)
-
-        return jsonify({"message": "Report received successfully"}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 # ----------------------------
 # Run locally
 # ----------------------------
-if __name__ == "__main__":
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     app.run(debug=True)
 
 # # import os
 # # from dotenv import load_dotenv
