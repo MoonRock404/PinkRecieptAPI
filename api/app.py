@@ -54,7 +54,7 @@ def analyze():
         image_bytes = image_file.read()
         mime_type = image_file.content_type or "image/jpeg"
 
-        model = genai.GenerativeModel("gemini-2.0-flash")
+        model = genai.GenerativeModel("gemini-2.5-flash")
 
         prompt = """
         Analyze this screenshot for harassment detection.
