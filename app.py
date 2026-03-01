@@ -63,20 +63,17 @@ def analyze():
     image_file.save(image_path)
 
     # Prepare the prompt for harassment detection
-    prompt = """ 
-    Return this response to this prompt in HTML code.
-    Do NOT include markdown code blocks (like ```html). 
+    prompt = """
     Analyze this screenshot for harassment detection.
-
-    Tasks:
-    1. Check if message is concerning and contains any abusive or harassing language categorizing it by severity level.
-    2. Provide user with OPTIONS not solutions.
-    3. Provide user with resources based on their situation.
-
-    The response (which is the HTML code) should return whether the message is considered harassment or not, options for the possible victim (if applicable), and resources they can reach out to.
-    Please keep the response polite as it is a sensitive subject. 
-   
-    """
+    Return ONLY valid JSON (no markdown, no explanation) in this format:
+    {
+    "is_concerning": true,
+    "severity": "low|medium|high",
+    "summary": "brief explanation",
+    "options": ["option 1", "option 2"],
+    "resources": ["resource 1", "resource 2"]
+    }
+    """ 
 
     with open(image_path, "rb") as f:
         image_bytes = f.read()
@@ -88,14 +85,14 @@ def analyze():
                 types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
             ],
             config=types.GenerateContentConfig(
-            #     response_mime_type="application/json", # Forces JSON output
+                response_mime_type="application/json", # Forces JSON output
                 temperature=0.2
             )
         )
 
         # Parse the JSON response
-        analysis_text = response.text  # just the plain text output
-        return render_template_string(analysis_text)
+        data = json.loads(response.text)
+        return jsonify(data)
 
 if __name__ == '__main__':
     app.run(debug=True)
