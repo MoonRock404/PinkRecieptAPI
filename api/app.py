@@ -30,69 +30,61 @@
 
 import os
 import json
-from flask import Flask, jsonify, render_template, request, render_template_string
-from dotenv import load_dotenv
+from flask import Flask, request, jsonify
 from google import genai
 from google.genai import types
+from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+app = Flask(_name_)
 
-# Initialize the modern Client
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/analyze', methods=['POST'])
+@app.route("/", methods=["POST"])
 def analyze():
-    if 'image' not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
+    try:
+        if "image" not in request.files:
+            return jsonify({"error": "No file uploaded"}), 400
 
-    image_file = request.files['image']
-    if image_file.filename == '':
-        return jsonify({"error": "No file selected"}), 400
+        image_file = request.files.get("image")
 
-    # Save image
-    image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_file.filename)
-    image_file.save(image_path)
+        if image_file.filename == "":
+            return jsonify({"error": "No file selected"}), 400
 
-    # Prepare the prompt for harassment detection
-    prompt = """
-    Analyze this screenshot for harassment detection.
-    Return ONLY valid JSON (no markdown, no explanation) in this format:
-    {
-    "is_concerning": true,
-    "severity": "low|medium|high",
-    "summary": "brief explanation",
-    "options": ["option 1", "option 2"],
-    "resources": ["resource 1", "resource 2"]
-    }
-    """ 
+        image_bytes = image_file.read()
+        mime_type = image_file.content_type or "image/jpeg"
 
-    with open(image_path, "rb") as f:
-        image_bytes = f.read()
+        prompt = """
+        Analyze this screenshot for harassment detection.
+        Return ONLY valid JSON (no markdown, no explanation) in this format:
+        {
+        "is_concerning": true,
+        "severity": "low|medium|high",
+        "summary": "brief explanation",
+        "options": ["option 1", "option 2"],
+        "resources": ["resource 1", "resource 2"]
+        }
+        """
 
         response = client.models.generate_content(
             model=MODEL_NAME,
             contents=[
                 prompt,
-                types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
+                types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
             ],
             config=types.GenerateContentConfig(
-                response_mime_type="application/json", # Forces JSON output
+                response_mime_type="application/json",
                 temperature=0.2
             )
         )
 
-        # Parse the JSON response
         data = json.loads(response.text)
-        return jsonify(data)
+        return jsonify(data), 200
 
-if __name__ == '__main__':
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if _name_ == "_main_":
     app.run(debug=True)
