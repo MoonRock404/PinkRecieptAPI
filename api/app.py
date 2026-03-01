@@ -31,16 +31,14 @@
 import os
 import json
 from flask import Flask, request, jsonify
-from google import genai
-from google.genai import types
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(_name_)
 
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-MODEL_NAME = os.getenv("GEMINI_MODEL_NAME", "gemini-2.5-flash")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 @app.route("/", methods=["POST"])
 def analyze():
@@ -56,6 +54,8 @@ def analyze():
         image_bytes = image_file.read()
         mime_type = image_file.content_type or "image/jpeg"
 
+        model = genai.GenerativeModel("gemini-2.0-flash")
+
         prompt = """
         Analyze this screenshot for harassment detection.
         Return ONLY valid JSON (no markdown, no explanation) in this format:
@@ -68,17 +68,8 @@ def analyze():
         }
         """
 
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=[
-                prompt,
-                types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
-            ],
-            config=types.GenerateContentConfig(
-                response_mime_type="application/json",
-                temperature=0.2
-            )
-        )
+        image_part = {"mime_type": mime_type, "data": image_bytes}
+        response = model.generate_content([prompt, image_part])
 
         data = json.loads(response.text)
         return jsonify(data), 200
