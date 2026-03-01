@@ -156,7 +156,7 @@ curl -X POST https://pink-reciept-api.vercel.app/report \
 
 **cURL (Windows):**
 ```bash
-curl -X POST https://pink-reciept-api.vercel.app/report ^
+curl.exe -X POST https://pink-reciept-api.vercel.app/report ^
   -H "Content-Type: application/json" ^
   -d "{\"platform\": \"Instagram\", \"severity\": \"high\", \"summary\": \"The message contains threatening language.\", \"options\": [\"Block the sender\", \"Save as evidence\"], \"resources\": [\"Crisis Text Line: Text HOME to 741741\"]}"
 ```
