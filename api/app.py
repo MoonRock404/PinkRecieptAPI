@@ -40,7 +40,7 @@ app = Flask(__name__)
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["POST"])
 def analyze():
     try:
         if "image" not in request.files:
