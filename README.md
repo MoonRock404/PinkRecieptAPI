@@ -21,13 +21,13 @@ https://pink-reciept-api.vercel.app/
 
 ---
 
-## 📡 API Reference
+##  API Reference
 
-### `POST /`
+### `POST /analyze`
 
 Analyzes an image screenshot for harassment detection.
 
-**Base URL:** `https://pink-reciept-api.vercel.app/`
+**Base URL:** `https://pink-reciept-api.vercel.app/analyze`
 
 **Request**
 
@@ -66,11 +66,11 @@ Any user with the endpoint URL can send requests directly.
 
 ---
 
-## Testing with Postman
+## Testing with Postman - Analyze Images
 
 1. Open Postman and create a new request
 2. Set method to **POST**
-3. Enter the URL: `https://pink-reciept-api.vercel.app/`
+3. Enter the URL: `https://pink-reciept-api.vercel.app/analyze`
 4. Click **Body** → select **form-data**
 5. Add a key called `image`, change the type to **File**
 6. Upload your screenshot
@@ -88,8 +88,8 @@ curl -X POST https://pink-reciept-api.vercel.app/ \
 
 **Windows:**
 ```bash
-curl -X POST https://pink-reciept-api.vercel.app/ \
-  -F "image=@C:\Users\yourname\Desktop\screenshot.jpg"
+curl.exe -X POST https://pink-reciept-api-sage.vercel.app/ \
+  -F "image=@C:\Users\yourname\Pictures\Screenshots\screenshot.png"
 ```
 ---
 
@@ -117,12 +117,12 @@ curl -X POST https://pink-reciept-api.vercel.app/ \
 
 ---
 
-## 📋 Report Generation
+##  Report Generation
 
-### Step 1 — Analyze the screenshot first using `POST /`
+### Step 1. Analyze the screenshot first using `POST /`
 Use the response from the first endpoint to fill in the report fields.
 
-### Step 2 — Generate the report using `POST /report`
+### Step 2. Generate the report using `POST /report`
 
 **Postman:**
 1. Open Postman and click **New Request**
@@ -170,7 +170,7 @@ curl -X POST https://pink-reciept-api.vercel.app/report ^
 
 ---
 
-## ⚠️ Error Handling
+## Error Handling
 
 The API returns informative error messages with appropriate HTTP status codes.
 
@@ -186,7 +186,7 @@ The API returns informative error messages with appropriate HTTP status codes.
 **Troubleshooting:**
 - Make sure the form field is named exactly `image`
 - Make sure you are uploading an actual image file (JPEG or PNG only)
-- If you get `Failed to parse Gemini response` — the AI returned an unexpected format, try again with a clearer screenshot
+- If you get `Failed to parse Gemini response`, the AI returned an unexpected format, try again with a clearer screenshot
 - If you get a general 500 error, check that your file is not corrupted
 
 ---
@@ -244,15 +244,15 @@ curl -X POST http://localhost:5000/ \
 ```
 Windows:
 ```bash
-curl -X POST http://localhost:5000/ \
-  -F "image=@C:\Users\yourname\Desktop\screenshot.jpg"
+curl.exe -X POST http://localhost:5000/ \
+  -F "image=@C:\Users\yourname\Pictures\Screenshots\screenshot.png"
 ```
 
 ---
 
-## ☁️ Deployment
+## Deployment
 
-This API is deployed on **Vercel**. Every push to the `main` branch on GitHub automatically redeploys the live API — no manual steps needed.
+This API is deployed on **Vercel**. Every push to the `main` branch on GitHub automatically redeploys the live API.
 
 **To deploy your own instance:**
 1. Fork this repo
@@ -261,8 +261,7 @@ This API is deployed on **Vercel**. Every push to the `main` branch on GitHub au
 4. Add environment variables in Vercel dashboard:
    - `GEMINI_API_KEY` → your Gemini API key
    - `GEMINI_MODEL_NAME` → `gemini-2.5-flash`
-5. Click **Deploy**
-**5. Test it**
+5. Click **Deploy** (Adjust commands for Mac and Windows)
 ```bash
 curl -X POST http://localhost:5000/ \
   -F "image=@/path/to/screenshot.jpg"
