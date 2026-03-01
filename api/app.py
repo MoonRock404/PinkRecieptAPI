@@ -42,7 +42,7 @@ genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 @app.route("/", methods=["POST"])
 def analyze():
-    try: 
+    try:
         if "image" not in request.files:
             return jsonify({"error": "No file uploaded"}), 400
 
@@ -71,14 +71,22 @@ def analyze():
         image_part = {"mime_type": mime_type, "data": image_bytes}
         response = model.generate_content([prompt, image_part])
 
+        # Strip markdown fences if Gemini wraps response in ```json ... ```
+        raw = response.text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        raw = raw.strip()
+
         data = json.loads(raw)
         return jsonify(data), 200
 
     except json.JSONDecodeError as e:
-        return jsonify({"error": f"Failed to parse Gemini response: {str(e)}", "raw": response.text}), 500
+        return jsonify({"error": f"Failed to parse Gemini response: {str(e)}"}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     app.run(debug=True)
