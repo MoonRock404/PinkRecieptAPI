@@ -36,13 +36,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(_name_)
-
+app = Flask(__name__)
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
 
 @app.route("/", methods=["POST"])
 def analyze():
-    try:
+    try: 
         if "image" not in request.files:
             return jsonify({"error": "No file uploaded"}), 400
 
@@ -60,22 +60,25 @@ def analyze():
         Analyze this screenshot for harassment detection.
         Return ONLY valid JSON (no markdown, no explanation) in this format:
         {
-        "is_concerning": true,
-        "severity": "low|medium|high",
-        "summary": "brief explanation",
-        "options": ["option 1", "option 2"],
-        "resources": ["resource 1", "resource 2"]
+          "is_concerning": true,
+          "severity": "low|medium|high",
+          "summary": "brief explanation",
+          "options": ["option 1", "option 2"],
+          "resources": ["resource 1", "resource 2"]
         }
         """
 
         image_part = {"mime_type": mime_type, "data": image_bytes}
         response = model.generate_content([prompt, image_part])
 
-        data = json.loads(response.text)
+        data = json.loads(raw)
         return jsonify(data), 200
 
+    except json.JSONDecodeError as e:
+        return jsonify({"error": f"Failed to parse Gemini response: {str(e)}", "raw": response.text}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if _name_ == "_main_":
+
+if __name__ == "__main__": 
     app.run(debug=True)
