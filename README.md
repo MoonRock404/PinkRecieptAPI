@@ -1,4 +1,4 @@
-# 🎀 Pink Receipt API
+# Pink Receipt API
 
 An AI-powered harassment detection API that analyzes screenshots of messages and returns a structured assessment of whether the content is concerning, along with options and resources for the potential victim.
 
@@ -6,30 +6,22 @@ An AI-powered harassment detection API that analyzes screenshots of messages and
 
 ## What It Does
 
-Send a screenshot of a conversation or message to the API and it will:
+The user can send screenshot of a conversation to the API and it will:
 - Detect whether the message contains harassment or abusive language
 - Classify the severity (low, medium, high)
-- Provide options for the potential victim
-- Provide relevant resources based on the situation
+- Provide options and relevant resources based on the situation
 
 ---
 
-## Base URL
 
-**Local:**
-```
-http://localhost:5000
-```
-
-**Live:**
+## Live API
 ```
 https://pink-reciept-api-sage.vercel.app/
 ```
 
 ---
 
-## Endpoint
-
+## API REFERENCE
 ### `POST /`
 
 Analyzes an image screenshot for harassment detection.
@@ -41,7 +33,14 @@ Analyzes an image screenshot for harassment detection.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| image | file | ✅ Yes | Screenshot of the message to analyze |
+| image | file | Yes | Screenshot of the message to analyze |
+
+---
+
+## Authentication
+
+This API is currently open and does not require authentication. 
+Any user with the endpoint URL can send requests directly.
 
 ---
 
@@ -90,19 +89,23 @@ curl -X POST https://pink-reciept-api-sage.vercel.app/ \
 
 ---
 
-## Error Responses
+## Error Handling
 
-| Status Code | Meaning |
-|-------------|---------|
-| 400 | No file uploaded or no file selected |
-| 500 | Server error |
+The API returns informative error messages with appropriate HTTP status codes.
 
-**Example error response:**
-```json
-{
-  "error": "No file uploaded"
-}
-```
+| Status Code | Meaning | Example Response |
+|-------------|---------|-----------------|
+| `200` | Success | Full JSON analysis |
+| `400` | Bad request | `{"error": "No file uploaded"}` |
+| `400` | Bad request | `{"error": "No file selected"}` |
+| `500` | Failed to parse Gemini response | `{"error": "Failed to parse Gemini response: <details>"}` |
+| `500` | General server error | `{"error": "error details here"}` |
+
+**Troubleshooting:**
+- Make sure the form field is named exactly `image`
+- Make sure you are uploading an actual image file (only JPEG and PNG)
+- If you get `Failed to parse Gemini response` — the AI returned an unexpected format, try again with a clearer screenshot
+- If you get a general 500 error, check that your file is not corrupted
 
 ---
 
